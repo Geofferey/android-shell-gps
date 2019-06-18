@@ -1,0 +1,153 @@
+#!/system/xbin/bash
+
+echo "GPS_SHELL" >> /sys/power/wake_lock;
+
+clear
+
+echo "GPS Shell by:"
+echo "geofferey @ xda-devs"
+echo "Free to redistribute & modify"
+
+sleep 2
+
+clear
+
+
+settings put secure location_providers_allowed +gps;
+
+settings put secure location_providers_allowed +network;
+
+am startservice com.jmninfotech.sfa/.ServiceTest > /dev/null 2>&1;
+
+IMEI="$(service call iphonesubinfo 1 | awk -F "'" '{print $2}' | sed '1 d' | tr -d '.' | awk '{print}' ORS=)";
+
+SERIAL="$(getprop ro.serialno)";
+
+ICCID="$(service call iphonesubinfo 11 | awk -F "'" '{print $2}' | sed '1 d' | tr -d '.' | awk '{print}' ORS=)";
+
+NUMBER="$(service call iphonesubinfo 13 | awk -F "'" '{print $2}' | sed '1 d' | tr -d '.' | awk '{print}' ORS=)";
+
+BUILD="$(getprop ro.build.description)";
+
+WLAN_IPV4="$(ifconfig wlan0 | grep -w "inet addr" | cut -d ":" -f2 | cut -d " " -f1)";
+
+RMNET_DATA0_IPV6="$(ifconfig rmnet_data0 | grep -w "inet6 addr:" |grep -w "Global" | rev | cut -d "/" -f2 | cut -d " " -f1 | rev | tr '[:lower:]' '[:upper:]')";
+
+BATTERY_LEVEL="$(dumpsys battery |grep -w "level" |cut -d ":" -f2 |cut -d " " -f2)"
+
+stty -echo -icanon time 0 min 0
+
+i=1
+
+
+while [ 1 ]; do
+
+GPS_LOCATION="$(dumpsys location| grep "gps: Location"|cut -d "[" -f2|cut -d "a" -f1|cut -d "s" -f2 |sed -n 1p| awk '{print $1}')";
+
+NET_LOCATION="$(dumpsys location |grep -w "network: Location" | cut -d "[" -f2 | cut -d "a" -f1 | cut -d "k" -f2 | sed -n 2p | awk '{print $1}')";
+
+WLAN_MAC="$(ifconfig wlan0 | grep -w "HWaddr" |rev |cut -d "t" -f1 | rev | cut -d "r" -f 2 | awk '{print $1}' |tr '[:lower:]' '[:upper:]')";
+
+WLAN_IPV4="$(ifconfig wlan0 | grep -w "inet addr" | cut -d ":" -f2 | cut -d " " -f1)";
+
+RMNET_DATA0_IPV6="$(ifconfig rmnet_data0 | grep -w "inet6 addr:" |grep -w "Global" | rev | cut -d "/" -f2 | cut -d " " -f1 | rev | tr '[:lower:]' '[:upper:]')";
+
+clear;
+
+date;
+
+echo "";
+
+
+echo "GPS Location: ""$GPS_LOCATION";
+
+if [ ! -z "$GPS_LOCATION" ]; then
+echo "https://google.com/maps?q=""$GPS_LOCATION";
+fi
+
+echo "";
+
+echo "NET Location: ""$NET_LOCATION";
+
+if [ ! -z "$NET_LOCATION" ]; then
+echo "https://google.com/maps?q=""$NET_LOCATION";
+fi
+
+echo "";
+
+echo "IMEI: ""$IMEI";
+
+echo "ICCID: ""$ICCID";
+
+echo "NUMBER: ""$NUMBER";
+
+echo "SERIAL: ""$SERIAL";
+
+if [ ! -z "$WLAN_MAC" ]; then
+echo "WLAN MAC: ""$WLAN_MAC"
+fi
+
+if [ ! -z "$WLAN_IPV4" ]; then
+echo "WLAN IP: ""$WLAN_IPV4"
+fi
+
+if [ ! -z "$RMNET_DATA0_IPV6" ]; then
+echo "MOBILE IP: ""$RMNET_DATA0_IPV6"
+fi
+
+echo "BUILD: ""$BUILD";
+
+echo "";
+
+BATTERY_LEVEL="$(dumpsys battery |grep -w "level" |cut -d ":" -f2 |cut -d " " -f2)";
+
+SCREEN_STATE="$(dumpsys power |grep -w "Display Power" |cut -d "=" -f2)";
+
+AC_CHRG_STATE=$(dumpsys battery |grep -w "AC powered" |cut -d ":" -f2 |cut -d " " -f2);
+
+USB_CHRG_STATE=$(dumpsys battery |grep -w "USB powered" |cut -d ":" -f2 |cut -d " " -f2);
+
+if [ $AC_CHRG_STATE = true ] || [ $USB_CHRG_STATE = true ]; then 
+CHARGE=+
+else
+CHARGE=-
+fi
+
+echo "BATTERY: ""$BATTERY_LEVEL% $CHARGE";
+echo "SCREEN: ""$SCREEN_STATE";
+
+if [ $AC_CHRG_STATE = true ] || [ $USB_CHRG_STATE = true ]; then 
+echo "CHARGING: YES"
+CHARGE=+
+else
+echo "CHARGING: NO"
+CHARGE=-
+fi
+
+echo ""
+
+echo "Press RETURN to exit";
+
+echo -ne "$i\r" > /dev/null 2>&1;
+
+((i+=1));
+
+read key;
+
+if [ $? -eq 0 ] && [ -z "$key" ]; then 
+break
+fi
+
+sleep 4;
+
+done
+
+am force-stop com.jmninfotech.sfa;
+
+echo "GPS_SHELL" >> /sys/power/wake_unlock;
+
+echo ""
+
+reset
+
+exit 0

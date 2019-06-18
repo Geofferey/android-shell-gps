@@ -1,0 +1,6 @@
+id=com.geofferey.gpsshell
+name=Magisk GPS Shell
+version=v1.0.0
+versionCode=1
+author=geofferey @ xda-developers
+description=A simple module for displaying GPS coordinates & device information via ADB, SSH, etc. Uses a modified .apk to assist the script. Must run 'gps-shell' in term to utilize. 
