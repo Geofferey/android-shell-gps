@@ -12,7 +12,6 @@ sleep 2
 
 clear
 
-
 settings put secure location_providers_allowed +gps;
 
 settings put secure location_providers_allowed +network;
@@ -28,6 +27,8 @@ ICCID="$(service call iphonesubinfo 11 | awk -F "'" '{print $2}' | sed '1 d' | t
 NUMBER="$(service call iphonesubinfo 13 | awk -F "'" '{print $2}' | sed '1 d' | tr -d '.' | awk '{print}' ORS=)";
 
 BUILD="$(getprop ro.build.description)";
+
+WLAN_MAC="$(ifconfig wlan0 | grep -w "HWaddr" |rev |cut -d "t" -f1 | rev | cut -d "r" -f 2 | awk '{print $1}' |tr '[:lower:]' '[:upper:]')";
 
 WLAN_IPV4="$(ifconfig wlan0 | grep -w "inet addr" | cut -d ":" -f2 | cut -d " " -f1)";
 
@@ -46,7 +47,7 @@ GPS_LOCATION="$(dumpsys location| grep "gps: Location"|cut -d "[" -f2|cut -d "a"
 
 NET_LOCATION="$(dumpsys location |grep -w "network: Location" | cut -d "[" -f2 | cut -d "a" -f1 | cut -d "k" -f2 | sed -n 2p | awk '{print $1}')";
 
-WLAN_MAC="$(ifconfig wlan0 | grep -w "HWaddr" |rev |cut -d "t" -f1 | rev | cut -d "r" -f 2 | awk '{print $1}' |tr '[:lower:]' '[:upper:]')";
+WLAN_SSID="$(dumpsys netstats | grep -E 'iface=wlan0.*networkId' |cut -d '"' -f2 |tail -n1)"
 
 WLAN_IPV4="$(ifconfig wlan0 | grep -w "inet addr" | cut -d ":" -f2 | cut -d " " -f1)";
 
@@ -82,6 +83,10 @@ echo "ICCID: ""$ICCID";
 echo "NUMBER: ""$NUMBER";
 
 echo "SERIAL: ""$SERIAL";
+
+if [ ! -z "$WLAN_SSID" ]; then
+echo "WLAN SSID: ""$WLAN_SSID"
+fi
 
 if [ ! -z "$WLAN_MAC" ]; then
 echo "WLAN MAC: ""$WLAN_MAC"
