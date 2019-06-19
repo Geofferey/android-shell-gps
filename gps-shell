@@ -42,8 +42,17 @@ stty -echo -icanon time 0 min 0
 
 i=1
 
-
 while [ 1 ]; do
+
+GPS_DUMP="$(dumpsys location |grep -w "gps: Location" |head -n 1)";
+
+ALTITUDE="$(echo "$GPS_DUMP" |cut -d ' ' -f 10 |grep -w "alt" |cut -d '=' -f 2)";
+
+VELOCITY="$(echo "$GPS_DUMP" |cut -d ' ' -f 11 |grep -w "vel" |cut -d '=' -f2)";
+
+BEARING="$(echo "$GPS_DUMP" |cut -d ' ' -f 12 |grep -w "bear" |cut -d '=' -f2)";
+
+SATELLITES="$(echo "$GPS_DUMP" |cut -d ' ' -f 15 |grep -w "satellites" |cut -d '=' -f 2 |cut -d ',' -f 1)";
 
 GPS_LOCATION="$(dumpsys location| grep "gps: Location"|cut -d "[" -f2|cut -d "a" -f1|cut -d "s" -f2 |sed -n 1p| awk '{print $1}')";
 
@@ -55,6 +64,14 @@ WLAN_IPV4="$(ifconfig wlan0 | grep -w "inet addr" | cut -d ":" -f2 | cut -d " " 
 
 RMNET_DATA0_IPV6="$(ifconfig rmnet_data0 | grep -w "inet6 addr:" |grep -w "Global" | rev | cut -d "/" -f2 | cut -d " " -f1 | rev | tr '[:lower:]' '[:upper:]')";
 
+BATTERY_LEVEL="$(dumpsys battery |grep -w "level" |cut -d ":" -f2 |cut -d " " -f2)";
+
+SCREEN_STATE="$(dumpsys power |grep -w "Display Power" |cut -d "=" -f2)";
+
+AC_CHRG_STATE=$(dumpsys battery |grep -w "AC powered" |cut -d ":" -f2 |cut -d " " -f2);
+
+USB_CHRG_STATE=$(dumpsys battery |grep -w "USB powered" |cut -d ":" -f2 |cut -d " " -f2);
+
 clear;
 
 date;
@@ -62,6 +79,17 @@ date;
 echo "";
 
 echo "GPS Location: ""$GPS_LOCATION";
+echo "Satellites: ""$SATELLITES";
+echo "Altitude: ""$ALTITUDE"" m";
+echo "Velocity: ""$VELOCITY"" m/s";
+
+if [ ! -z "$BEARING" ]; then
+
+echo "Bearing: ""$BEARING""°";
+
+fi
+
+echo "";
 
 if [ ! -z "$GPS_LOCATION" ]; then
 echo "https://google.com/maps?q=""$GPS_LOCATION";
@@ -109,14 +137,6 @@ echo "BUILD: ""$BUILD";
 
 echo "";
 
-BATTERY_LEVEL="$(dumpsys battery |grep -w "level" |cut -d ":" -f2 |cut -d " " -f2)";
-
-SCREEN_STATE="$(dumpsys power |grep -w "Display Power" |cut -d "=" -f2)";
-
-AC_CHRG_STATE=$(dumpsys battery |grep -w "AC powered" |cut -d ":" -f2 |cut -d " " -f2);
-
-USB_CHRG_STATE=$(dumpsys battery |grep -w "USB powered" |cut -d ":" -f2 |cut -d " " -f2);
-
 if [ $AC_CHRG_STATE = true ] || [ $USB_CHRG_STATE = true ]; then 
 CHARGE=+
 else
@@ -148,7 +168,7 @@ if [ $? -eq 0 ] && [ -z "$key" ]; then
 break
 fi
 
-sleep 4;
+sleep 1;
 
 done
 
