@@ -30,6 +30,8 @@ BUILD="$(getprop ro.build.description)";
 
 WLAN_MAC="$(ifconfig wlan0 | grep -w "HWaddr" |rev |cut -d "t" -f1 | rev | cut -d "r" -f 2 | awk '{print $1}' |tr '[:lower:]' '[:upper:]')";
 
+BT_MAC=$(settings get secure bluetooth_address| cut -d " " -f1)
+
 WLAN_IPV4="$(ifconfig wlan0 | grep -w "inet addr" | cut -d ":" -f2 | cut -d " " -f1)";
 
 RMNET_DATA0_IPV6="$(ifconfig rmnet_data0 | grep -w "inet6 addr:" |grep -w "Global" | rev | cut -d "/" -f2 | cut -d " " -f1 | rev | tr '[:lower:]' '[:upper:]')";
@@ -59,7 +61,6 @@ date;
 
 echo "";
 
-
 echo "GPS Location: ""$GPS_LOCATION";
 
 if [ ! -z "$GPS_LOCATION" ]; then
@@ -84,12 +85,16 @@ echo "NUMBER: ""$NUMBER";
 
 echo "SERIAL: ""$SERIAL";
 
-if [ ! -z "$WLAN_SSID" ]; then
-echo "WLAN SSID: ""$WLAN_SSID"
-fi
-
 if [ ! -z "$WLAN_MAC" ]; then
 echo "WLAN MAC: ""$WLAN_MAC"
+fi
+
+if [ ! -z "$BT_MAC" ]; then
+echo "BT MAC: ""$BT_MAC"
+fi
+
+if [ ! -z "$WLAN_SSID" ]; then
+echo "WLAN SSID: ""$WLAN_SSID"
 fi
 
 if [ ! -z "$WLAN_IPV4" ]; then
