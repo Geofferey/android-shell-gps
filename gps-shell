@@ -52,7 +52,7 @@ VELOCITY="$(echo "$GPS_DUMP" |cut -d ' ' -f 11 |grep -w "vel" |cut -d '=' -f2)";
 
 BEARING="$(echo "$GPS_DUMP" |cut -d ' ' -f 12 |grep -w "bear" |cut -d '=' -f2)";
 
-SATELLITES="$(echo "$GPS_DUMP" |cut -d ' ' -f 15 |grep -w "satellites" |cut -d '=' -f 2 |cut -d ',' -f 1)";
+SATELLITES="$(echo "$GPS_DUMP" |cut -d '{' -f 3 |grep -w "satellites" |cut -d '=' -f 2 |cut -d ',' -f 1)";
 
 GPS_LOCATION="$(dumpsys location| grep "gps: Location"|cut -d "[" -f2|cut -d "a" -f1|cut -d "s" -f2 |sed -n 1p| awk '{print $1}')";
 
