@@ -134,7 +134,7 @@ on_install() {
   # Extend/change the logic to whatever you want
   ui_print "- Extracting module files"
 #  unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
-  unzip -o "$ZIPFILE" 'gps-shell' -d $MODPATH >&2
+  unzip -o "$ZIPFILE" 'shgps' -d $MODPATH >&2
   unzip -o "$ZIPFILE" 'gpsassist.apk' -d /data/local/tmp/ >&2
   pm install -r /data/local/tmp/gpsassist.apk
   rm /data/local/tmp/gpsassist.apk
