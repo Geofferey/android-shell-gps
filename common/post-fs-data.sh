@@ -13,6 +13,6 @@ MODDIR=${0%/*}
 
 #pm install -r $MODDIR/gpsassist.apk
 
-ln -fs $MGKIMG/$MODID/gps-shell /sbin/gps-shell
+ln -fs $MGKIMG/$MODID/shgps /sbin/shgpsl
 
 exit 0

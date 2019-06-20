@@ -147,7 +147,7 @@ on_install() {
 set_permissions() {
   # The following is the default rule, DO NOT remove
   set_perm_recursive $MODPATH 0 0 0755 0644
-  set_perm  $MODPATH/gps-shell 0 0 0500
+  set_perm  $MODPATH/shgps 0 0 0500
   set_perm  $MODPATH/gpsassist.apk 0 0 0600
   
  # Here are some examples:
