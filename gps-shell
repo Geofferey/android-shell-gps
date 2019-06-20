@@ -50,6 +50,12 @@ ALTITUDE="$(echo "$GPS_DUMP" |cut -d ' ' -f 10 |grep -w "alt" |cut -d '=' -f 2)"
 
 VELOCITY="$(echo "$GPS_DUMP" |cut -d ' ' -f 11 |grep -w "vel" |cut -d '=' -f2)";
 
+#if [ "$VELOCITY" = 0.0 ]; then
+
+#    VELOCITY=
+    
+#fi
+
 BEARING="$(echo "$GPS_DUMP" |cut -d ' ' -f 12 |grep -w "bear" |cut -d '=' -f2)";
 
 SATELLITES="$(echo "$GPS_DUMP" |cut -d '{' -f 3 |grep -w "satellites" |cut -d '=' -f 2 |cut -d ',' -f 1)";
@@ -79,20 +85,33 @@ date;
 echo "";
 
 echo "GPS Location: ""$GPS_LOCATION";
-echo "Satellites: ""$SATELLITES";
+
+if [ ! -z "$SATELLITES" ]; then
+
+    echo "Satellites: ""$SATELLITES";
+
+fi
+
 echo "Altitude: ""$ALTITUDE"" m";
-echo "Velocity: ""$VELOCITY"" m/s";
+
+#if [ ! -z "$VELOCITY" ]; then
+
+    echo "Velocity: ""$VELOCITY"" m/s";
+
+#fi
 
 if [ ! -z "$BEARING" ]; then
 
-echo "Bearing: ""$BEARING""°";
+    echo "Bearing: ""$BEARING""°";
 
 fi
 
 echo "";
 
 if [ ! -z "$GPS_LOCATION" ]; then
-echo "https://google.com/maps?q=""$GPS_LOCATION";
+
+    echo "https://google.com/maps?q=""$GPS_LOCATION";
+
 fi
 
 echo "";
@@ -100,7 +119,10 @@ echo "";
 echo "NET Location: ""$NET_LOCATION";
 
 if [ ! -z "$NET_LOCATION" ]; then
-echo "https://google.com/maps?q=""$NET_LOCATION";
+
+    echo "";
+    echo "https://google.com/maps?q=""$NET_LOCATION";
+
 fi
 
 echo "";
@@ -114,23 +136,34 @@ echo "NUMBER: ""$NUMBER";
 echo "SERIAL: ""$SERIAL";
 
 if [ ! -z "$WLAN_MAC" ]; then
-echo "WLAN MAC: ""$WLAN_MAC"
+
+    echo "WLAN MAC: ""$WLAN_MAC"
+
 fi
 
+
 if [ ! -z "$BT_MAC" ]; then
-echo "BT MAC: ""$BT_MAC"
+
+    echo "BT MAC: ""$BT_MAC"
+
 fi
 
 if [ ! -z "$WLAN_SSID" ]; then
-echo "WLAN SSID: ""$WLAN_SSID"
+
+    echo "WLAN SSID: ""$WLAN_SSID"
+
 fi
 
 if [ ! -z "$WLAN_IPV4" ]; then
-echo "WLAN IP: ""$WLAN_IPV4"
+
+    echo "WLAN IP: ""$WLAN_IPV4"
+
 fi
 
 if [ ! -z "$RMNET_DATA0_IPV6" ]; then
-echo "MOBILE IP: ""$RMNET_DATA0_IPV6"
+
+    echo "MOBILE IP: ""$RMNET_DATA0_IPV6"
+
 fi
 
 echo "BUILD: ""$BUILD";
@@ -138,20 +171,28 @@ echo "BUILD: ""$BUILD";
 echo "";
 
 if [ $AC_CHRG_STATE = true ] || [ $USB_CHRG_STATE = true ]; then 
-CHARGE=+
+
+    CHARGE=+
+
 else
-CHARGE=-
+
+    CHARGE=-
+
 fi
 
 echo "BATTERY: ""$BATTERY_LEVEL% $CHARGE";
 echo "SCREEN: ""$SCREEN_STATE";
 
-if [ $AC_CHRG_STATE = true ] || [ $USB_CHRG_STATE = true ]; then 
-echo "CHARGING: YES"
-CHARGE=+
+if [ $AC_CHRG_STATE = true ] || [ $USB_CHRG_STATE = true ]; then
+
+    echo "CHARGING: YES"
+    CHARGE=+
+
 else
-echo "CHARGING: NO"
-CHARGE=-
+
+    echo "CHARGING: NO"
+    CHARGE=-
+
 fi
 
 echo ""
@@ -165,7 +206,9 @@ echo -ne "$i\r" > /dev/null 2>&1;
 read key;
 
 if [ $? -eq 0 ] && [ -z "$key" ]; then 
-break
+
+    break
+
 fi
 
 sleep 1;
