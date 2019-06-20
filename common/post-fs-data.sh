@@ -8,7 +8,7 @@
 # This script will be executed in post-fs-data mode
 
 MGKIMG=/sbin/.core/img
-MODID=com.geofferey.gpsshell
+MODID=com.geofferey.shgps
 MODDIR=${0%/*}
 
 #pm install -r $MODDIR/gpsassist.apk
